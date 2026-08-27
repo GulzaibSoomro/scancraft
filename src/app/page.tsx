@@ -1,101 +1,115 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Logo } from "@/components/logo";
+import { PreviewScanForm } from "@/components/preview-scan-form";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  let signedIn = false;
+
+  if (
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      signedIn = !!user;
+    } catch {
+      signedIn = false;
+    }
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="min-h-screen">
+      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+        <Logo />
+        <nav className="flex items-center gap-3 text-sm">
+          {signedIn ? (
+            <Link
+              href="/dashboard"
+              className="blueprint-border bg-ink px-4 py-2 font-medium text-paper transition-opacity hover:opacity-90"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="px-3 py-2 font-medium text-ink underline-offset-2 hover:underline"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className="blueprint-border bg-ink px-4 py-2 font-medium text-paper transition-opacity hover:opacity-90"
+              >
+                Create account
+              </Link>
+            </>
+          )}
+        </nav>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <main className="mx-auto max-w-5xl px-6 pb-20 pt-10 sm:pt-16">
+        <p className="text-label text-ink-soft">For solo builders shipping with AI</p>
+        <h1 className="mt-3 max-w-3xl font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
+          ScanCraft
+        </h1>
+        <p className="mt-4 max-w-2xl text-lg text-ink-soft">
+          Paste your live app URL. We check for the usual web security gaps —
+          and the mistakes AI coding tools tend to ship — then give you a
+          plain-English report with copy-paste fixes.
+        </p>
+
+        <div className="mt-10">
+          <PreviewScanForm />
+        </div>
+
+        <section className="mt-16 grid gap-8 sm:grid-cols-3">
+          <div>
+            <h2 className="text-label text-ink">What we look for</h2>
+            <p className="mt-2 text-sm text-ink-soft">
+              Leaked API keys, open database access, missing login checks on
+              admin pages, weak security headers, and more.
+            </p>
+          </div>
+          <div>
+            <h2 className="text-label text-ink">AI-tool blind spots</h2>
+            <p className="mt-2 text-sm text-ink-soft">
+              Things Lovable, Bolt, Cursor, v0, and Replit often miss — like
+              Supabase tables anyone can read, or secret keys baked into the
+              frontend.
+            </p>
+          </div>
+          <div>
+            <h2 className="text-label text-ink">Fixes you can use</h2>
+            <p className="mt-2 text-sm text-ink-soft">
+              Each finding includes a short explanation and a ready-to-paste
+              code snippet or prompt for your AI coding tool.
+            </p>
+          </div>
+        </section>
+
+        <div className="mt-16 flex flex-wrap items-center gap-4 border-t border-grid pt-8">
+          <Link
+            href="/signup"
+            className="blueprint-border bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-opacity hover:opacity-90"
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Get started free
+          </Link>
+          <Link
+            href="/pricing"
+            className="text-sm font-medium text-ink underline-offset-2 hover:underline"
           >
-            Read our docs
-          </a>
+            Pricing
+          </Link>
+          <p className="text-sm text-ink-soft">
+            No credit card for the free preview or free tier.
+          </p>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

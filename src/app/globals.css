@@ -3,25 +3,53 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #edf1f5;
+  --grid: #c4d0e0;
+  --ink: #1d3557;
+  --ink-soft: #4a5b7a;
+  --surface: #ffffff;
+  --critical: #c1272d;
+  --warning: #b5790f;
+  --pass: #1b7a6e;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans;
+    background-image: theme("backgroundImage.blueprint-grid");
+    background-size: theme("backgroundSize.grid");
+  }
+
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-ink;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-label {
+    @apply font-display font-bold uppercase tracking-[0.14em] text-xs;
+  }
+
+  .blueprint-border {
+    @apply border border-ink;
+  }
+
+  .stamp-tilt {
+    transform: rotate(-6deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-safe-only {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    .stamp-tilt {
+      transform: none;
+    }
   }
 }
