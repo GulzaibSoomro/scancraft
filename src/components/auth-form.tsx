@@ -40,8 +40,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         router.push("/dashboard");
         router.refresh();
       } else {
-        const origin =
-          process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+        const origin = window.location.origin;
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
@@ -74,7 +73,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setError(null);
     setLoading(true);
     const supabase = createClient();
-    const origin = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+    // Always use the current site origin so cookies match the redirect host.
+    const origin = window.location.origin;
 
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "github",
