@@ -16,6 +16,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [loading, setLoading] = useState(false);
 
   const isLogin = mode === "login";
+  const githubEnabled =
+    process.env.NEXT_PUBLIC_ENABLE_GITHUB_AUTH === "true";
 
   async function handleEmailAuth(e: React.FormEvent) {
     e.preventDefault();
@@ -90,22 +92,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
   return (
     <div className="w-full max-w-md">
-      <button
-        type="button"
-        onClick={handleGitHub}
-        disabled={loading}
-        className="blueprint-border flex w-full items-center justify-center gap-2 bg-surface px-4 py-3 text-sm font-medium text-ink transition-opacity hover:bg-paper disabled:opacity-60"
-      >
-        <GitHubIcon />
-        Continue with GitHub
-      </button>
-
-      <div className="my-6 flex items-center gap-3">
-        <div className="h-px flex-1 bg-grid" />
-        <span className="text-label text-ink-soft">or email</span>
-        <div className="h-px flex-1 bg-grid" />
-      </div>
-
       <form onSubmit={handleEmailAuth} className="space-y-4">
         <div>
           <label htmlFor="email" className="text-label text-ink-soft">
@@ -169,6 +155,26 @@ export function AuthForm({ mode }: { mode: Mode }) {
         </button>
       </form>
 
+      {githubEnabled && (
+        <>
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-grid" />
+            <span className="text-label text-ink-soft">or</span>
+            <div className="h-px flex-1 bg-grid" />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGitHub}
+            disabled={loading}
+            className="blueprint-border flex w-full items-center justify-center gap-2 bg-surface px-4 py-3 text-sm font-medium text-ink transition-opacity hover:bg-paper disabled:opacity-60"
+          >
+            <GitHubIcon />
+            Continue with GitHub
+          </button>
+        </>
+      )}
+
       <p className="mt-6 text-center text-sm text-ink-soft">
         {isLogin ? (
           <>
@@ -192,6 +198,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
 function plainAuthError(message: string): string {
   const lower = message.toLowerCase();
+  if (lower.includes("provider is not enabled") || lower.includes("unsupported provider")) {
+    return "That sign-in method isn’t turned on yet. Use email and password instead.";
+  }
   if (lower.includes("invalid login")) {
     return "Email or password doesn’t match. Try again, or create an account.";
   }
